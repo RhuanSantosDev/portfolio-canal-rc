@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<!--
+  ============================================================
+  CANAL RC · PORTFÓLIO DE RHUAN CAMARGO  (arquivo único)
+  ============================================================
+  COMO ESTE ARQUIVO ESTÁ ORGANIZADO (use Ctrl+F nos títulos "=====")
+    1) <style>  : todo o visual (cores, fontes, layout, animações)
+    2) <body>   : o esqueleto da página (header, seções, chat, player)
+    3) <script> : os dados (projetos, skills, cursos...) e as interações
+
+  ONDE MODIFICAR AS COISAS MAIS COMUNS
+    - Cores ........................ CSS, bloco "Tokens" (variáveis --co, --mn...)
+    - Textos fixos ................. HTML, dentro de cada <section>
+    - Projetos/certificados/skills . JS, bloco "Dados reais"
+    - Progresso de um curso ........ JS, lista CT (troque o número de 0 a 100)
+    - Perfis (Recrutador/Dev/Curioso) JS, objeto PF
+    - Mensagens do chat ............ JS, lista MS
+  Tudo que estiver escrito [PREENCHER] precisa ser trocado por dado real.
+  ============================================================
+-->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Canal RC · Rhuan Camargo</title>
+<meta name="description" content="Portfólio de Rhuan Camargo, estudante de Engenharia de Software, em formato de canal de streaming.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+/* ===== Tokens (variáveis de cor e fonte) =====
+   --bg fundo | --sf cards | --tx texto | --mu texto secundário
+   --co destaque principal (azul gelo) | --mn destaque secundário (menta)
+   --h altura do header (o JS atualiza sozinho) | --sans e --mono = fontes */
+:root{color-scheme:dark;--bg:#0A0A0F;--sf:#16161F;--tx:#F4F4F8;--mu:#9A9AB0;--co:#A9C8F5;--mn:#3DF5C8;--ln:#2a2a3d;--h:58px;--sans:'Plus Jakarta Sans',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+html{scroll-padding-top:calc(var(--h) + 12px)}
+body{background:var(--bg);color:var(--tx);font:500 16px/1.55 var(--sans);padding-top:var(--h);overflow-x:hidden}
+button,input{font:inherit;color:inherit}
+a{color:var(--mn)}
+:focus-visible{outline:2px solid var(--mn);outline-offset:2px}
+/* ===== Header (barra fixa do topo) =====
+   #bar = barra de progresso do scroll | #nav = capítulos | #q = busca
+   No celular (menos de 900px) vira 2 linhas e os botões mostram só o ícone. */
+header{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;background:rgba(10,10,15,.94);border-bottom:1px solid var(--ln)}
+#bar{position:fixed;top:0;left:0;height:3px;width:0;z-index:40;background:linear-gradient(90deg,var(--co),var(--mn))}
+.logo{font-weight:800;letter-spacing:-.05em;font-size:20px}
+.logo span{background:var(--co);color:var(--bg);padding:0 6px;border-radius:4px;margin-left:3px}
+#nav{display:flex;gap:2px;flex:1;overflow-x:auto;scrollbar-width:none}
+#nav button{background:none;border:0;padding:6px 10px;border-radius:8px;color:var(--mu);cursor:pointer;white-space:nowrap}
+#nav button:hover{color:var(--tx);background:var(--sf)}
+.hb{background:var(--sf);border:1px solid var(--ln);border-radius:8px;padding:6px 10px;cursor:pointer;white-space:nowrap}
+.hb:hover{border-color:var(--mn)}
+#q{background:var(--sf);border:1px solid var(--ln);border-radius:8px;padding:6px 10px;width:150px}
+@media(max-width:899px){:root{--h:104px}#nav{order:3;flex-basis:100%}header{gap:8px 6px}#q{flex:1;width:auto;min-width:70px;padding:6px 8px}.hb{padding:6px 7px}.logo{font-size:17px}.lb{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
+/* ===== Layout das seções =====
+   #hero = destaque | #lista = Minha lista | as demais seções são reordenadas pelo perfil (JS) */
+main{display:flex;flex-direction:column;padding:0 0 40px}
+section{padding:28px 20px}
+h2{font-size:26px;letter-spacing:-.04em;font-weight:800}
+.sub{color:var(--mu);margin:2px 0 14px}
+.mono{font-family:var(--mono);font-size:12px;color:var(--mu)}
+#hero{order:-2;display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:center;padding-top:40px}
+#hero h1{font-size:clamp(44px,8vw,84px);line-height:.95;letter-spacing:-.06em;font-weight:800;margin:8px 0 12px}
+#hero p{max-width:46ch;color:var(--mu)}
+#lista{order:-1}
+@media(max-width:760px){#hero{grid-template-columns:1fr}}
+.live{background:var(--co);color:var(--bg);font-weight:800;font-size:12px;padding:2px 8px;border-radius:99px}
+.bt{border:0;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer;background:var(--co);color:var(--bg)}
+.bt.g{background:var(--sf);color:var(--tx);border:1px solid var(--ln)}
+.bt:hover{filter:brightness(1.1)}
+.bts{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+/* hero preview: mini lista animada */
+.pv{background:var(--sf);border:1px solid var(--ln);border-radius:16px;padding:16px;display:grid;gap:10px}
+.pv .mv{display:flex;justify-content:space-between;gap:8px;padding:12px;border-radius:10px;background:var(--bg);border-left:4px solid var(--mn);animation:pop 8s infinite both}
+.pv .mv:nth-child(2){animation-delay:.9s;border-color:var(--co)}
+.pv .mv:nth-child(3){animation-delay:1.8s}
+.pv em{font:400 12px var(--mono);color:var(--mu);font-style:normal}
+@keyframes pop{0%,8%{opacity:0;transform:translateY(14px)}18%,78%{opacity:1;transform:none}90%,100%{opacity:0;transform:translateX(30px)}}
+/* ===== Fileiras e cards =====
+   .rw = fileira | .tr = trilho que rola | .cd = card | .cv = capa | .pg = barra de progresso | .chips = etiquetas */
+.rw{position:relative}
+.tr{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x proximity;padding:4px 2px 12px;scrollbar-width:thin}
+.ar{position:absolute;top:50%;left:-6px;z-index:2;width:36px;height:36px;border-radius:50%;border:1px solid var(--ln);background:var(--sf);cursor:pointer;font-size:20px;transform:translateY(-50%)}
+.ar.r{left:auto;right:-6px}
+.ar:hover{border-color:var(--mn)}
+.cd{flex:0 0 250px;scroll-snap-align:start;background:var(--sf);border:1px solid var(--ln);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.cv{position:relative;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;height:150px;border:0;padding:14px;text-align:left;cursor:pointer;background:linear-gradient(160deg,var(--a) 0%,#16161F 78%)}
+.cv b{position:absolute;top:2px;right:12px;font-size:72px;line-height:1;font-weight:800;letter-spacing:-.06em;color:rgba(10,10,15,.45)}
+.cv i{font:400 11px var(--mono);color:var(--tx);font-style:normal}
+.cv span{font-weight:800;font-size:19px;letter-spacing:-.03em}
+.ac{display:flex;gap:8px;padding:12px;flex-wrap:wrap}
+.ac .bt{padding:7px 12px;font-size:14px}
+.bd{padding:14px;display:grid;gap:8px;flex:1}
+.bd h3{font-size:18px;letter-spacing:-.03em}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{background:var(--bg);border:1px solid var(--ln);border-radius:99px;padding:3px 10px;font-size:13px}
+.pg{height:8px;border-radius:99px;background:var(--bg);overflow:hidden}
+.pg i{display:block;height:100%;background:linear-gradient(90deg,var(--co),var(--mn))}
+.cd .bt{margin-top:auto;text-align:center;text-decoration:none;font-size:14px;padding:8px 12px;display:block}
+.cd .bt[aria-disabled=true]{opacity:.5;pointer-events:none}
+.sob{max-width:62ch;display:grid;gap:12px}
+/* ===== Chat simulado (painel lateral no desktop, painel inferior no celular) ===== */
+.chat{position:fixed;z-index:20;top:var(--h);right:0;bottom:0;width:300px;background:var(--sf);border-left:1px solid var(--ln);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s}
+body.chat-on .chat{transform:none}
+.ch{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--ln)}
+#ms{flex:1;overflow-y:auto;padding:12px 14px;display:grid;align-content:end;gap:8px;font-size:14px}
+#ms b{color:var(--mn);font-family:var(--mono);font-size:12px;font-weight:600}
+.rx{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--ln)}
+.rx button{flex:1;font-size:22px;background:var(--bg);border:1px solid var(--ln);border-radius:10px;cursor:pointer;padding:4px}
+.rx button:hover{border-color:var(--co)}
+.fl{position:absolute;bottom:64px;font-size:28px;pointer-events:none;animation:up 1.8s ease-out forwards}
+@keyframes up{to{transform:translateY(-240px);opacity:0}}
+@media(min-width:1100px){body.chat-on main,body.chat-on footer{margin-right:300px}}
+@media(max-width:899px){.chat{top:auto;left:0;width:auto;height:46vh;border-left:0;border-top:1px solid var(--ln);transform:translateY(100%);padding-bottom:env(safe-area-inset-bottom,0px)}}
+/* ===== Tela de perfil (#pf) e player de projeto (#md) =====
+   Classe .cinema no body = modo cinema (fundo preto atrás do player) */
+#pf{position:fixed;inset:0;z-index:70;background:var(--bg);display:grid;place-content:center;gap:24px;text-align:center;padding:24px}
+#pf h2{font-size:clamp(28px,6vw,44px)}
+.pfs{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.pfs button{width:150px;padding:28px 12px;border-radius:16px;border:1px solid var(--ln);background:var(--sf);cursor:pointer;font-weight:800;font-size:18px}
+.pfs button:hover{border-color:var(--co);transform:translateY(-4px)}
+.pfs small{display:block;font-weight:500;color:var(--mu);margin-top:6px}
+#md{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:rgba(0,0,0,.72);padding:16px}
+body.cinema #md{background:#000}
+.mb{width:min(760px,100%);max-height:92vh;overflow:auto;background:var(--sf);border:1px solid var(--ln);border-radius:16px;padding:20px;display:grid;gap:14px}
+body.cinema .mb{box-shadow:0 0 90px rgba(169,200,245,.4)}
+.mh{display:flex;justify-content:space-between;gap:10px;align-items:start}
+.mh h2{font-size:30px}
+.scr{min-height:130px;background:linear-gradient(160deg,var(--a),#0A0A0F 80%);border-radius:12px;padding:18px;display:grid;align-content:end;gap:6px}
+.scr p{background:rgba(10,10,15,.75);padding:10px 12px;border-radius:8px}
+.chp{display:flex;gap:8px;flex-wrap:wrap}
+.chp button{background:var(--bg);border:1px solid var(--ln);border-radius:8px;padding:6px 10px;cursor:pointer}
+.chp button[aria-current=true]{border-color:var(--mn);color:var(--mn)}
+footer{padding:24px 20px;color:var(--mu);font-size:14px;border-top:1px solid var(--ln)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<header>
+  <div class="logo">Canal<span>RC</span></div>
+  <nav id="nav" aria-label="Capítulos da página"></nav>
+  <input id="q" type="search" placeholder="Buscar (/)" aria-label="Buscar no canal">
+  <button class="hb" id="bl"><span aria-hidden="true">★</span> <span class="lb">Minha lista </span>(<span id="lc">0</span>)</button>
+  <button class="hb" id="bc" aria-expanded="false"><span aria-hidden="true">💬</span><span class="lb"> Chat</span></button>
+  <button class="hb" id="bp"><span aria-hidden="true">👤</span><span class="lb"> Perfil: <span id="pn">–</span></span></button>
+</header>
+
+<main>
+  <!-- Cada <section> tem um id usado pelo menu e pelo perfil. A ordem na tela
+       é definida pelo JS (objeto PF), não pela ordem escrita aqui. -->
+  <!-- DESTAQUE: série em destaque (CineLog). O texto #hl muda conforme o perfil. -->
+  <section id="hero" aria-label="Destaque">
+    <div>
+      <span class="live">● EM DESTAQUE</span> <span class="mono">T1 · EP1 · 2026</span>
+      <h1>CineLog</h1>
+      <p id="hl"></p>
+      <div class="bts"><button class="bt" data-open="cinelog">Assistir agora</button><button class="bt g" data-fav="cinelog">+ Minha lista</button></div>
+    </div>
+    <div class="pv" aria-hidden="true">
+      <div class="mv"><span>★ Maratona de sexta</span><em>editar · remover</em></div>
+      <div class="mv"><span>★ Clássico favorito</span><em>editar · remover</em></div>
+      <div class="mv"><span>+ Sessão de sábado</span><em>novo</em></div>
+    </div>
+  </section>
+  <section id="lista" hidden><h2>Minha lista</h2><p class="sub">O que você salvou neste canal.</p><div class="rw"><div class="tr"></div></div></section>
+  <!-- PROJETOS: cards criados pelo JS a partir da lista PR (não edite aqui). -->
+  <section id="projetos"><h2>Projetos</h2><p class="sub">Séries da temporada 1.</p><div id="r-pr"></div></section>
+  <!-- SKILLS: cards criados pela lista SK. -->
+  <section id="skills"><h2>Skills por gênero</h2><p class="sub">O que eu uso e em que nível.</p><div id="r-sk"></div></section>
+  <!-- CONTINUE ASSISTINDO: cursos e estudos, criados pela lista CT (com barra de progresso). -->
+  <section id="continue"><h2>Continue assistindo</h2><p class="sub">Estudos em andamento e concluídos.</p><div id="r-ct"></div></section>
+  <!-- CONQUISTAS: certificados, criados pela lista CQ. -->
+  <section id="conquistas"><h2>Conquistas</h2><p class="sub">Certificados com credencial.</p><div id="r-cq"></div></section>
+  <!-- EM BREVE: próximos projetos, criados pela lista EB. -->
+  <section id="embreve"><h2>Em breve</h2><p class="sub">Próximas estreias, ainda em andamento.</p><div id="r-eb"></div></section>
+  <!-- SOBRE MIM: texto em HTML fixo (edite aqui). A 1ª frase (#sl) muda por perfil. -->
+  <section id="sobre"><h2>Sobre mim</h2><p class="mono">Episódio piloto</p>
+    <div class="sob"><p id="sl"></p>
+    <p>Sou Rhuan Camargo, estudante de Engenharia de Software. Estudo front-end (grid, Tailwind e Bootstrap), JavaScript com React e APIs, Git e GitHub, Python, SQL e MySQL. Tive contato básico com Java e C, em projetos de sala com protoboard.</p>
+    <p>Também trago experiência de trabalhos com marketing digital e e-commerce, e gosto de comunicação assertiva.</p></div></section>
+  <!-- CONTATO: links das redes (edite os href aqui). -->
+  <section id="contato"><h2>Siga o canal</h2><p class="sub">Fale comigo nas redes.</p>
+    <div class="bts"><a class="bt" href="https://github.com/RhuanSantosDev" target="_blank" rel="noopener">GitHub</a><a class="bt g" href="https://www.linkedin.com/in/rhuan-santos-" target="_blank" rel="noopener">LinkedIn</a><a class="bt g" href="https://www.instagram.com/_rhuancamargo/" target="_blank" rel="noopener">Instagram</a></div></section>
+</main>
+<footer>Canal RC · Rhuan Camargo · Feito com ajuda do Claude</footer>
+
+<!-- CHAT: mensagens vêm da lista MS (JS); os botões de emoji criam as reações. -->
+<aside class="chat" id="chat" aria-label="Chat ao vivo simulado">
+  <div class="ch"><span class="live">● AO VIVO</span><small class="mono">chat simulado</small></div>
+  <div id="ms" aria-live="off"></div>
+  <div class="rx" id="rx"><button aria-label="Reagir com fogo">🔥</button><button aria-label="Reagir com palmas">👏</button><button aria-label="Reagir com riso">😂</button><button aria-label="Reagir com coração">💚</button></div>
+</aside>
+
+<!-- TELA DE PERFIL: aparece na 1ª visita e no botão de perfil do header. -->
+<div id="pf"><h2>Quem está na sala?</h2><div class="pfs">
+  <button data-pf="rec">Recrutador<small>Direto ao ponto</small></button>
+  <button data-pf="dev">Dev<small>Mostra o código</small></button>
+  <button data-pf="cur">Curioso<small>Passeio livre</small></button></div></div>
+
+<!-- PLAYER DE PROJETO (modal): preenchido pela função draw() no JS. -->
+<div id="md" hidden role="dialog" aria-modal="true" aria-labelledby="mt"><div class="mb">
+  <div class="mh"><div><span class="mono" id="me"></span><h2 id="mt"></h2></div><div class="bts" style="margin:0"><button class="bt g" id="mc">Modo cinema</button><button class="bt g" id="mx" aria-label="Fechar">Fechar ✕</button></div></div>
+  <div class="scr" id="sc"><b id="ct" class="mono"></b><p id="cx"></p></div>
+  <div class="bts" style="margin:0"><button class="bt" id="sk" data-ch="1">Pular introdução</button></div>
+  <div class="chp" id="chp"></div>
+</div></div>
+
+<script>
+/* ===== Utilidades =====
+   $ e $$ = atalhos para querySelector | RM = true se a pessoa pediu menos animação
+   st = lê/grava dados no navegador (localStorage) sem quebrar se estiver bloqueado */
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const st={g(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},s(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+/* ===== Dados reais (EDITE AQUI quando estudar ou publicar algo novo) =====
+   PR  projetos     {id, n=nome, a=cor da capa, tag, d=descrição, tech, repo=link GitHub, dep=link do deploy}
+                    Para adicionar: copie uma linha, troque o id (único, sem espaços) e os textos.
+   SK  skills       [gênero, cor, [lista de skills]]
+   CT  cursos       [nome, rótulo, porcentagem de 0 a 100]  <- atualize a % aqui
+   CQ  certificados [nome, instituição, data, link]  (link vazio '' = botão desabilitado)
+   EB  em breve     lista de nomes
+   PF  perfis       o = ordem das seções, h = texto do destaque, s = frase do Sobre mim
+   MS  chat         [usuário fictício, mensagem]  (tudo simulado) */
+const PR=[
+{id:'cinelog',n:'CineLog',a:'#A9C8F5',tag:'JavaScript · CSS',d:'Diário cinematográfico com lista de filmes. Dá para adicionar, retirar e editar os seus favoritos.',tech:'JavaScript, CSS',repo:'https://github.com/RhuanSantosDev/Projeto-CP3-JS',dep:'[PREENCHER]'},
+{id:'alura',n:'Projeto-curso-ALURA',a:'#3DF5C8',tag:'HTML · Git',d:'Projeto do curso Git e GitHub: compartilhando e colaborando em projetos.',tech:'HTML, Git, GitHub',repo:'https://github.com/RhuanSantosDev/Projeto-curso-ALURA'},
+{id:'pr',n:'Aprenda-Pull-Request',a:'#3DF5C8',tag:'Git · Pull request',d:'Fork para praticar pull requests.',tech:'Git, GitHub',repo:'https://github.com/RhuanSantosDev/Aprenda-Pull-Request'},
+{id:'base',n:'Estudos de base',a:'#9A9AB0',tag:'HTML · CSS',d:'Meus primeiros passos em HTML e CSS: repositórios webdev, aula-3 e aula-de-html-e-css.',tech:'HTML, CSS',repo:'https://github.com/RhuanSantosDev?tab=repositories'}];
+const SK=[['Front-end','#A9C8F5',['HTML','CSS','Grid','Tailwind','Bootstrap','Vibecoding']],['JavaScript','#3DF5C8',['React','APIs','Git','GitHub']],['Back e dados','#A9C8F5',['Python','SQL','MySQL','Java (básico)','C (básico)']],['Negócios e pessoas','#3DF5C8',['Marketing digital','E-commerce','Comunicação assertiva']]];
+// CT = Continue assistindo. O 3º valor é a porcentagem (0 a 100): a barra e o leitor de tela usam esse número.
+// Ao concluir um curso: troque o rótulo para 'Concluído', a % para 100 e adicione o certificado em CQ.
+const CT=[
+['Python: Crie a sua primeira aplicação · Alura','Em andamento · 25% · 8h',25], // curso atual: atualize o 25 conforme avançar
+['Git e GitHub · Alura','Concluído',100],
+['Algoritmos · FIAP','Concluído',100],
+['Front-end: grid, Tailwind, Bootstrap','Em estudo',66],
+['JavaScript: React e APIs','Em estudo',66],
+['Python e SQL/MySQL','Em estudo',66],
+['Java e C','Básico',33]];
+const F='https://on.fiap.com.br/local/nanocourses/gerar_certificado.php?chave=';
+const CQ=[['Git e GitHub','Alura','set. 2026','https://cursos.alura.com.br/certificate/bc76981c-15e7-4db8-a5de-6a32edbbb5a3?lang'],['Algoritmos: Aprenda a programar','FIAP','mar. 2026',F+'485efcbeaba48a7f64515b9be8859047&action=view'],['Design Thinking','FIAP','mar. 2026',F+'ce97e9809bba2c45970b67031f19facf&action=view'],['Agentes Autônomos (Agentic AI)','FIAP','mar. 2026',F+'0226d2bf01e73b60debc274170ec1ee0&action=view'],['Formação Social e Sustentabilidade','FIAP','mar. 2026',F+'19a56f753ad7d26dbbdcf07f06b29e92&action=view'],['Modelagem de Dados','Fundação Bradesco','[MÊS/ANO]','']];
+const EB=['Deploy do CineLog','Projeto com React e APIs','Novos projetos da T2'];
+const PF={
+rec:{n:'Recrutador',o:['projetos','conquistas','skills','continue','embreve','sobre','contato'],h:'Estudante de Engenharia de Software com base em front-end, JavaScript e dados. Projetos e conquistas vêm primeiro.',s:'Direto ao ponto: estou em formação e mostro aqui o que já construí.'},
+dev:{n:'Dev',o:['projetos','skills','continue','embreve','conquistas','sobre','contato'],h:'Lista de filmes em JavaScript e CSS: adicionar, retirar e editar. O repositório está aberto.',s:'Aqui vai o diff: estudo front-end, JavaScript e dados, um commit por vez.'},
+cur:{n:'Curioso',o:['sobre','projetos','skills','continue','conquistas','embreve','contato'],h:'Um diário de filmes feito em JavaScript. Entra, mexe, edita.',s:'Oi! Pega a pipoca que eu conto minha história.'}};
+const T={projetos:'Projetos',skills:'Skills',continue:'Continue',conquistas:'Conquistas',embreve:'Em breve',sobre:'Sobre',contato:'Contato'};
+const MS=[['viewer_07','esse destaque tá com cara de estreia 🍿'],['pipoca_dev','quem estuda Git assim merece pull request aprovado'],['ctrl_c_ctrl_v','o CineLog edita filme? chique'],['debug_noturno','modo cinema ligado, silêncio no chat'],['grid_fa','grid e flex são amigos, só avisando'],['bit_curioso','esperando a temporada 2'],['domingo_de_codigo','ver barra de progresso é mais viciante que maratona'],['latencia_zero','C com protoboard? respeito'],['anonimo_42','a barra / abre a busca, descobri agora']];
+
+/* ===== Renderização =====
+   row() monta uma fileira com setas | card() monta o card de projeto | gen() monta cards genéricos
+   Cada $('#r-...') abaixo preenche uma seção usando as listas de dados acima. */
+const row=h=>`<div class="rw"><button class="ar" data-sc="-1" aria-label="Rolar para a esquerda">‹</button><div class="tr" tabindex="0">${h}</div><button class="ar r" data-sc="1" aria-label="Rolar para a direita">›</button></div>`;
+const gen=(s,h)=>`<article class="cd" data-s="${s.toLowerCase()}">${h}</article>`;
+const card=(p,i,mini)=>`<article class="cd" data-s="${(p.n+' '+p.tag+' '+p.d).toLowerCase()}"><button class="cv" data-open="${p.id}" style="--a:${p.a}" aria-label="Assistir ${p.n}"><b>${i+1}</b><i>T1 · EP${i+1} · 2026</i><span>${p.n}</span></button><div class="ac"><button class="bt" data-open="${p.id}">Assistir agora</button>${mini?`<button class="bt g" data-rm="${p.id}">Remover</button>`:`<button class="bt g" data-fav="${p.id}">+ Minha lista</button>`}</div></article>`;
+$('#r-pr').innerHTML=row(PR.map((p,i)=>card(p,i)).join(''));
+$('#r-sk').innerHTML=row(SK.map(s=>gen(s[0]+' '+s[2].join(' '),`<div class="cv" style="--a:${s[1]};height:90px;cursor:default"><span>${s[0]}</span></div><div class="bd"><div class="chips">${s[2].map(x=>`<span>${x}</span>`).join('')}</div></div>`)).join(''));
+$('#r-ct').innerHTML=row(CT.map(c=>gen(c[0]+' '+c[1],`<div class="bd"><h3>${c[0]}</h3><span class="mono">${c[1]}</span><div class="pg" role="progressbar" aria-label="${c[0]}: ${c[1]}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${c[2]}"><i style="width:${c[2]}%"></i></div></div>`)).join(''));
+$('#r-cq').innerHTML=row(CQ.map(c=>gen(c[0]+' '+c[1],`<div class="bd"><h3>${c[0]}</h3><span class="mono">${c[1]} · ${c[2]}</span>${c[3]?`<a class="bt g" href="${c[3]}" target="_blank" rel="noopener">Ver credencial</a>`:`<a class="bt g" aria-disabled="true">Ver credencial [PREENCHER]</a>`}</div>`)).join(''));
+$('#r-eb').innerHTML=row(EB.map(e=>gen(e,`<div class="bd"><h3>${e}</h3><span class="mono">Em andamento · [PREENCHER]</span></div>`)).join(''));
+
+/* ===== Perfil =====
+   apply(k): reordena as seções (style.order), troca os textos, monta o menu e salva a escolha. */
+function apply(k){const p=PF[k];st.s('rc-p',k);p.o.forEach((id,i)=>$('#'+id).style.order=i);$('#hl').textContent=p.h;$('#sl').textContent=p.s;$('#pn').textContent=p.n;$('#nav').innerHTML=p.o.map(id=>`<button data-go="${id}">${T[id]}</button>`).join('');$('#pf').hidden=true}
+
+/* ===== Minha lista =====
+   L = ids favoritos (salvos no navegador) | toggle() adiciona/remove | sync() atualiza botões, contador e seção
+   filt() aplica a busca nos cards. */
+let L=st.g('rc-l',[]);
+function sync(){$$('[data-fav]').forEach(b=>{const on=L.includes(b.dataset.fav);b.textContent=on?'✓ Na lista':'+ Minha lista';b.setAttribute('aria-pressed',on)});
+$('#lc').textContent=L.length;$('#lista .tr').innerHTML=L.map(id=>{const i=PR.findIndex(p=>p.id==id);return card(PR[i],i,true)}).join('');$('#lista').hidden=!L.length;filt()}
+function toggle(id){L=L.includes(id)?L.filter(x=>x!=id):[...L,id];st.s('rc-l',L);sync()}
+function filt(){const v=$('#q').value.trim().toLowerCase();$$('.cd').forEach(c=>c.hidden=!!v&&!c.dataset.s.includes(v))}
+$('#q').addEventListener('input',filt);
+
+/* ===== Player =====
+   CH() define os 4 capítulos de cada projeto | draw() desenha o capítulo atual | openP/closeP abrem e fecham (Esc fecha). */
+const M={p:null,c:0};let last;
+const CH=p=>[['Introdução',`${p.n}: ${p.tag}.`],['O que faz',p.d],['Tecnologias',p.tech],['Onde ver',`Código: <a href="${p.repo}" target="_blank" rel="noopener">repositório no GitHub</a>${p.dep?` · Deploy: ${p.dep}`:''}`]];
+function draw(){const p=M.p,c=CH(p);$('#mt').textContent=p.n;$('#me').textContent=`T1 · EP${PR.indexOf(p)+1} · capítulo ${M.c+1} de 4`;$('#sc').style.setProperty('--a',p.a);$('#ct').textContent=c[M.c][0];$('#cx').innerHTML=c[M.c][1];$('#sk').hidden=M.c>0;
+$('#chp').innerHTML=c.map((x,i)=>`<button data-ch="${i}" ${i==M.c?'aria-current="true"':''}>${i+1}. ${x[0]}</button>`).join('')}
+function openP(id){last=document.activeElement;M.p=PR.find(x=>x.id==id);M.c=0;draw();$('#md').hidden=false;document.body.style.overflow='hidden';$('#mx').focus()}
+function closeP(){$('#md').hidden=true;document.body.classList.remove('cinema');document.body.style.overflow='';$('#mc').textContent='Modo cinema';if(last)last.focus()}
+$('#mx').onclick=closeP;
+$('#mc').onclick=()=>{const on=document.body.classList.toggle('cinema');$('#mc').textContent=on?'Acender luz':'Modo cinema'};
+
+/* ===== Chat simulado =====
+   msg() adiciona uma mensagem da lista MS a cada ~4s | clicar nos emojis cria a reação flutuante. */
+let mi=0;function msg(){const c=$('#ms'),m=MS[mi++%MS.length],d=document.createElement('p');d.innerHTML=`<b>${m[0]}</b> ${m[1]}`;c.append(d);while(c.children.length>40)c.firstChild.remove();c.scrollTop=c.scrollHeight}
+msg();setInterval(()=>{if(!document.hidden)msg()},4200);
+$('#rx').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const s=document.createElement('span');s.className='fl';s.textContent=b.textContent;s.style.left=(12+Math.random()*60)+'%';$('#chat').append(s);setTimeout(()=>s.remove(),1800)});
+$('#bc').onclick=()=>{const on=document.body.classList.toggle('chat-on');$('#bc').setAttribute('aria-expanded',on)};
+if(matchMedia('(min-width:1100px)').matches){document.body.classList.add('chat-on');$('#bc').setAttribute('aria-expanded','true')}
+
+/* ===== Navegação e eventos =====
+   Um único listener de clique lê os atributos data-* dos botões: data-open (abrir player), data-fav/data-rm (lista),
+   data-go (menu), data-sc (setas), data-pf (perfil), data-ch (capítulo). Também: atalho / , Esc e barra de progresso. */
+const go=id=>$('#'+id).scrollIntoView({behavior:RM?'auto':'smooth'});
+document.addEventListener('click',e=>{const t=e.target.closest('[data-open],[data-fav],[data-rm],[data-go],[data-sc],[data-pf],[data-ch]');if(!t)return;const d=t.dataset;
+if(d.open)openP(d.open);else if(d.fav)toggle(d.fav);else if(d.rm)toggle(d.rm);else if(d.go)go(d.go);
+else if(d.sc){const tr=t.closest('.rw').querySelector('.tr');tr.scrollBy({left:d.sc*tr.clientWidth*.8,behavior:RM?'auto':'smooth'})}
+else if(d.pf)apply(d.pf);else if(d.ch!=null){M.c=+d.ch;draw()}});
+$('#bl').onclick=()=>go(L.length?'lista':'projetos');
+$('#bp').onclick=()=>{$('#pf').hidden=false};
+document.addEventListener('keydown',e=>{
+if(e.key==='/'&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)&&$('#md').hidden&&$('#pf').hidden){e.preventDefault();$('#q').focus()}
+else if(e.key==='Escape'){if(!$('#md').hidden)closeP();else if(document.activeElement===$('#q')){$('#q').value='';filt();$('#q').blur()}}
+else if(e.key==='Tab'&&!$('#md').hidden){const f=$$('#md button,#md a[href]').filter(x=>!x.hidden&&x.offsetParent),a=f[0],z=f[f.length-1];
+if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}}});
+addEventListener('scroll',()=>{const h=document.documentElement;$('#bar').style.width=(h.scrollTop/((h.scrollHeight-h.clientHeight)||1)*100)+'%'},{passive:true});
+
+/* ===== Placeholder da busca por tamanho de tela ===== */
+const ph=()=>{$('#q').placeholder=matchMedia('(max-width:899px)').matches?'Buscar':'Buscar (/)'};ph();addEventListener('resize',ph);
+/* ===== Altura real do header (evita sobreposição) ===== */
+new ResizeObserver(()=>document.documentElement.style.setProperty('--h',$('header').offsetHeight+'px')).observe($('header'));
+/* ===== Início =====
+   Desenha a lista, aplica o perfil salvo (ou abre a tela de escolha). */
+sync();const sv=st.g('rc-p',null);if(sv&&PF[sv])apply(sv);else{apply('rec');$('#pf').hidden=false}
+</script>
+</body>
+</html>
