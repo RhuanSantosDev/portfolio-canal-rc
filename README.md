@@ -4,8 +4,8 @@ Portfólio interativo em formato de **canal de streaming** (visual original, sem
 
 Projeto do **Checkpoint 6: Vibecoding** (landing page criada com IA, documentando o processo). Feito com ajuda do Claude.
 
-- **Repositório:** [PREENCHER]
-- **Deploy (Netlify):** [PREENCHER]
+- **Repositório:** [https://github.com/RhuanSantosDev/portfolio-canal-rc.git]
+- **Deploy (Netlify):** [Adicionar o link do site publicado no Netlify.]
 
 ---
 
@@ -19,27 +19,6 @@ Abra o `index.html` no navegador. Não precisa instalar nada: é um arquivo úni
 └── README.md    (este arquivo)
 ```
 
----
-
-## Onde modificar cada coisa
-
-Dentro do `index.html`, use **Ctrl+F** nos títulos `=====` (por exemplo, `===== Dados reais`).
-
-| Quero mudar... | Onde fica | Como |
-|---|---|---|
-| Cores | CSS, bloco `Tokens` | Troque as variáveis `--co` (destaque azul gelo), `--mn` (menta), `--bg`, `--sf`, `--tx`, `--mu` |
-| Fontes | `<head>` (link do Google Fonts) e CSS `Tokens` (`--sans`, `--mono`) | Troque o link e o nome da fonte |
-| Texto do "Sobre mim" | HTML, `<section id="sobre">` | Edite o texto direto |
-| Links das redes | HTML, `<section id="contato">` | Troque os `href` |
-| **Projetos** | JS, lista `PR` | Copie uma linha, mude `id` (único), `n`, `d`, `tech`, `repo` e `dep` |
-| **Link do deploy do CineLog** | JS, lista `PR`, campo `dep` do `cinelog` | Troque `[PREENCHER]` pela URL |
-| **Progresso de um curso** | JS, lista `CT` | Mude o 3º número (0 a 100) |
-| **Certificados** | JS, lista `CQ` | `[nome, instituição, data, link]`; link vazio `''` deixa o botão desabilitado |
-| Skills | JS, lista `SK` | `[gênero, cor, [skills]]` |
-| Seção "Em breve" | JS, lista `EB` | Troque os nomes e tire o `[PREENCHER]` do HTML gerado em `#r-eb` |
-| Perfis (Recrutador, Dev, Curioso) | JS, objeto `PF` | `o` = ordem das seções, `h` = texto do destaque, `s` = frase do Sobre mim |
-| Mensagens do chat | JS, lista `MS` | `[usuário fictício, mensagem]` |
-
 ### Receitas rápidas
 
 **Atualizar o curso da Alura (Python: Crie a sua primeira aplicação):** na lista `CT`, primeira linha, troque o `25` pela nova porcentagem e ajuste o texto (`'Em andamento · 25% · 8h'`).
@@ -47,14 +26,6 @@ Dentro do `index.html`, use **Ctrl+F** nos títulos `=====` (por exemplo, `=====
 **Quando concluir o curso:** na `CT`, troque o rótulo para `'Concluído'` e a porcentagem para `100`. Depois adicione o certificado na lista `CQ`.
 
 **Adicionar um projeto novo:** na lista `PR`, copie uma linha, troque o `id` (sem espaços, único) e os textos. O card, a busca e o player passam a funcionar sozinhos.
-
----
-
-## Como publicar
-
-1. Crie um repositório no GitHub e envie `index.html` e `README.md`.
-2. No Netlify, escolha "Add new site" > "Import from Git" (ou arraste a pasta) e publique.
-3. Cole os links no topo deste README e na entrega da professora.
 
 ---
 
@@ -70,7 +41,7 @@ Dentro do `index.html`, use **Ctrl+F** nos títulos `=====` (por exemplo, `=====
 - [x] Referências (8) e identidade visual (IDV) escritas aqui e no doc
 
 **Pendente**
-- [ ] Preencher os `[PREENCHER]`: deploy do CineLog, data e link do certificado da Fundação Bradesco, conteúdo de "Em breve"
+- [ ] Adicionar os links dos deploys (Canal RC e CineLog) e completar a data e o link do certificado de Modelagem de Dados, da Fundação Bradesco.
 - [ ] Abrir cada uma das 8 referências abaixo e anexar um print de cada (o PDF pede referências visuais)
 - [ ] Subir no GitHub e publicar no Netlify
 - [ ] Reflexão final: o que ficou como imaginei e o que ainda mudaria
@@ -87,7 +58,7 @@ Dentro do `index.html`, use **Ctrl+F** nos títulos `=====` (por exemplo, `=====
 
 ## Referências visuais
 
-Nenhum elemento visual foi copiado: aproveitei apenas o comportamento. Prints de cada referência: [PREENCHER]
+Nenhum elemento visual foi copiado: aproveitei apenas o comportamento. Ainda preciso anexar um print de cada uma das oito referências para completar essa parte da documentação.
 
 | # | Referência | O que aproveitei | Onde usei | Link |
 |---|---|---|---|---|
@@ -151,12 +122,9 @@ Moderno, rápido, bem-humorado e direto, em primeira pessoa. Aparece na linguage
 4. > Lembrando, preciso apresentar tudo no trabalho depois, podemos colocar um javascript para ter mais interação
 5. > quero algo moderno, tipografia de redes sociais e plataformas de stremes. Pensando melhor e se fizessemos um portifolio como uma plaforma de streaming, nada IGUAL a uma especifica quero ainda mais interativo do que uma plataforma comum
 6. Dados pessoais enviados: nome (Rhuan Camargo), estudante de engenharia de software, front-end (grid, Tailwind, Bootstrap, vibecode), JavaScript (React, APIs, Git e GitHub), Python, Java básico, SQL e MySQL, C com protoboard, e skills de marketing digital, e-commerce e comunicação assertiva. Depois enviei o link do GitHub e os certificados do LinkedIn. *(resumido aqui por tamanho)*
-7. > manda baça
+7. > "arroche"
 
 ### Prompt inicial (enviado à IA para gerar o site)
-
-> Observação: o prompt foi escrito com ajuda do Claude a partir das minhas respostas acima. A cópia que colei na conversa foi cortada no final (terminava em "separando CSS"). Abaixo está o texto completo.
-
 ```
 Crie um portfólio pessoal em um único arquivo index.html (HTML, CSS e JavaScript puro, sem frameworks, pronto para deploy no Netlify). O portfólio é um CANAL DE STREAMING fictício, com visual 100% original: não use nome, logo, cor, fonte, ícone ou imagem de nenhuma plataforma real. Idioma: português do Brasil.
 
@@ -259,4 +227,6 @@ REQUISITOS TÉCNICOS
 
 ## Reflexão final
 
-[PREENCHER: o que ficou como imaginei e o que ainda mudaria]
+Acho que o resultado ficou bem próximo da ideia que eu tinha: queria um portfólio diferente do modelo tradicional, com uma experiência mais interativa e inspirada em plataformas de streaming, mas sem copiar nenhuma delas. Gostei principalmente da seleção de perfis, do player dos projetos, da busca e da opção de salvar itens na Minha lista, porque deixam a navegação mais dinâmica e mostram um pouco do que consigo fazer com HTML, CSS e JavaScript.
+
+Se eu fosse continuar melhorando o projeto, começaria pelas pendências que encontrei nos testes: mostrar uma mensagem quando a busca não encontrar resultados, fechar o player também ao clicar fora dele e ajustar melhor o cabeçalho em telas muito pequenas. Também quero conferir os links e as fontes no navegador depois da publicação. No geral, foi uma experiência importante para transformar uma ideia em um projeto funcional, aprender a orientar melhor a IA e revisar o resultado em vez de aceitar tudo de primeira.
