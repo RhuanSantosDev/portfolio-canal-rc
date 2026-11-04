@@ -5,7 +5,7 @@ Portfólio interativo em formato de **canal de streaming** (visual original, sem
 Projeto do **Checkpoint 6: Vibecoding** (landing page criada com IA, documentando o processo). Feito com ajuda do Claude.
 
 - **Repositório:** [https://github.com/RhuanSantosDev/portfolio-canal-rc.git]
-- **Deploy (Netlify):** [Adicionar o link do site publicado no Netlify.]
+- **Deploy (Netlify):** [https://shiny-horse-900c5d.netlify.app/]
 
 ---
 
